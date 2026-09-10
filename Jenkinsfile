@@ -1,48 +1,53 @@
-Pipeline{
+pipeline {
     agent any
-    stages{
-        stage('compute out'){
-            steps{
-                git branch:main, url:'https://github.com/teju2028/DevOps.git'
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/teju2028/DevOps.git'
             }
         }
-        stage('compile')
-        {
-            steps{
+
+        stage('Compile') {
+            steps {
                 bat 'javac Factorial.java TestFactorial.java'
             }
         }
-        stage('test')
-        {
-            steps{
+
+        stage('Test') {
+            steps {
                 bat 'java TestFactorial'
             }
         }
-        stage('run')
-        {
-            steps{
+
+        stage('Run') {
+            steps {
                 bat 'java Factorial'
             }
         }
-        stage('package jar')
-        {
-            steps{
-                'jar crm factorial.java manifest.txt Factorial.class'
+
+        stage('Package JAR') {
+            steps {
+                bat 'jar cfm factorial.jar manifest.txt Factorial.class TestFactorial.class'
             }
         }
-        stage('archieve jar')
-        {
-            steps{
-                'archieveArtifact Artifact: factorial.jar'
+
+        stage('Archive JAR') {
+            steps {
+                archiveArtifacts artifacts: 'factorial.jar', fingerprint: true
             }
         }
     }
-    post{
-        success{
-            echo 'Successful build,test,run etc'
+
+    post {
+        success {
+            echo 'Successful build, test, run and package'
         }
-        failure{
-            echo 'Failed in build,test,run etc..check once'
+
+        failure {
+            echo 'Failed in build, test, run etc. Check once.'
         }
     }
 }
